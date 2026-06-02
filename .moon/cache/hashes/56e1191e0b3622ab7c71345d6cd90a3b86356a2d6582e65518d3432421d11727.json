@@ -1,1 +1,0 @@
-[{"command":"cargo","args":["--all","--check","fmt"],"deps":{},"env":{},"inputs":{},"inputEnv":{},"outputs":[],"projectDeps":[],"target":"proto-plugins:fmt","toolchains":["system"],"version":"3"}]

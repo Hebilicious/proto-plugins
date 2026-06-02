@@ -1,1 +1,0 @@
-[{"command":"cargo","args":["--workspace","test"],"deps":{},"env":{},"inputs":{},"inputEnv":{},"outputs":[],"projectDeps":[],"target":"proto-plugins:test","toolchains":["system"],"version":"3"}]
