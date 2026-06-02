@@ -22,8 +22,10 @@ jobs:
         with:
           auto-install: true
 
-      - name: Install WASM target
-        run: rustup target add wasm32-wasip1
+      - name: Install Rust components
+        run: |
+          rustup component add rustfmt
+          rustup target add wasm32-wasip1
 
       - name: Run moon tasks
         run: |
