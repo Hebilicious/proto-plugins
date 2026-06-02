@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && rm -rf /var/lib/apt/lists/*
 
 RUN /usr/local/cargo/bin/rustup target add wasm32-wasip1
-RUN bash <(curl -fsSL https://moonrepo.dev/install/proto.sh) 0.55.3 --yes
+RUN bash <(curl -fsSL https://moonrepo.dev/install/proto.sh) 0.57.3 --yes
 
 WORKDIR /workspace
 COPY . .

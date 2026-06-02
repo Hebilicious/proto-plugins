@@ -14,14 +14,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install proto toolchain
         uses: moonrepo/setup-toolchain@v0
         with:
           auto-install: true
 
+      - name: Install WASM target
+        run: rustup target add wasm32-wasip1
+
       - name: Run moon tasks
-        run: moon run proto-plugins:fmt proto-plugins:test proto-plugins:build
+        run: |
+          moon run proto-plugins:fmt
+          moon run proto-plugins:test
+          moon run proto-plugins:build
 
   e2e:
     name: E2E
@@ -36,6 +44,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run Docker e2e
         run: ./plugins/${{ matrix.plugin }}/tests/e2e/run.sh

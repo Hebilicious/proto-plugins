@@ -85,7 +85,7 @@ pub fn build_register_tool_output() -> AnyResult<RegisterToolOutput> {
         name: NAME.into(),
         type_of: PluginType::CommandLine,
         default_version: Some(UnresolvedVersionSpec::Alias("stable".into())),
-        minimum_proto_version: Some(Version::new(0, 55, 0)),
+        minimum_proto_version: Some(Version::new(0, 57, 0)),
         plugin_version: Version::parse(env!("CARGO_PKG_VERSION")).ok(),
         ..RegisterToolOutput::default()
     })
