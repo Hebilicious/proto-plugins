@@ -1,0 +1,1 @@
+[{"command":"cargo","args":["--target","--workspace","build","wasm32-wasip1"],"deps":{},"env":{},"inputs":{},"inputEnv":{},"outputs":[{"glob":"target/wasm32-wasip1/debug/*.wasm"}],"projectDeps":[],"target":"proto-plugins:build","toolchains":["system"],"version":"3"}]

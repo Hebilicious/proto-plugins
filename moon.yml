@@ -1,0 +1,44 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "rust"
+layer: "tool"
+tags: ["rust", "proto", "wasm"]
+
+fileGroups:
+  sources:
+    - "Cargo.toml"
+    - "Cargo.lock"
+    - "rust-toolchain.toml"
+    - "plugins/*/Cargo.toml"
+    - "plugins/*/src/**/*.rs"
+  tests:
+    - "plugins/*/tests/**/*.rs"
+    - "plugins/*/tests/e2e/**/*"
+  config:
+    - ".github/workflows/*.yml"
+    - ".moon/**/*.yml"
+    - "release-plz.toml"
+    - "hk.pkl"
+
+tasks:
+  fmt:
+    command: "cargo"
+    args: ["fmt", "--all", "--check"]
+    inputs:
+      - "@group(sources)"
+
+  test:
+    command: "cargo"
+    args: ["test", "--workspace"]
+    inputs:
+      - "@group(sources)"
+      - "@group(tests)"
+
+  build:
+    command: "cargo"
+    args: ["build", "--workspace", "--target", "wasm32-wasip1"]
+    inputs:
+      - "@group(sources)"
+      - "@group(config)"
+    outputs:
+      - "target/wasm32-wasip1/debug/*.wasm"

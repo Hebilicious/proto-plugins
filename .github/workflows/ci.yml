@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install proto toolchain
+        uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+
+      - name: Run moon tasks
+        run: moon run proto-plugins:fmt proto-plugins:test proto-plugins:build
+
+  e2e:
+    name: E2E
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin:
+          - nu
+          - ocaml
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Docker e2e
+        run: ./plugins/${{ matrix.plugin }}/tests/e2e/run.sh

@@ -1,0 +1,33 @@
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+
+local rustSources = List(
+  "Cargo.toml",
+  "Cargo.lock",
+  "rust-toolchain.toml",
+  "plugins/*/Cargo.toml",
+  "plugins/*/src/**/*.rs",
+  "plugins/*/tests/**/*.rs",
+)
+
+hooks {
+  ["pre-commit"] {
+    steps {
+      ["cargo-fmt"] {
+        glob = rustSources
+        check = "cargo fmt --all --check"
+      }
+      ["cargo-test"] {
+        glob = rustSources
+        check = "cargo test --workspace"
+      }
+    }
+  }
+
+  ["pre-push"] {
+    steps {
+      ["wasm-build"] {
+        check = "cargo build --workspace --target wasm32-wasip1"
+      }
+    }
+  }
+}

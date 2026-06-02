@@ -1,0 +1,61 @@
+
+running 11 tests
+test nushell::tests::declares_ecosystem_file_precedence ... ok
+test nushell::tests::rewrites_stable_alias_to_latest ... ok
+test nushell::tests::normalizes_supported_nushell_tags_only ... ok
+test version_files::tests::normalizes_prefixed_and_zero_padded_versions ... ok
+test nushell::tests::exposes_nu_as_primary_executable_and_plugins_as_secondary ... ok
+test version_files::tests::parses_nushell_version_file_with_prefix ... ok
+test version_files::tests::parses_nushell_aliases ... ok
+test version_files::tests::rejects_unsupported_package_like_values ... ok
+test nushell::tests::builds_prebuilt_download_output_with_checksum_file ... ok
+test nushell::tests::resolves_release_assets_for_supported_targets ... ok
+test nushell::tests::builds_versions_output_with_stable_alias_and_deduped_versions ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test public_locate_executables_output_exposes_nu_and_bundled_plugins ... ok
+test public_parse_version_file_normalizes_supported_nushell_inputs ... ok
+test public_download_prebuilt_output_uses_linux_release_archive ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 16 tests
+test proto::tests::declares_ecosystem_file_precedence_and_build_ignore ... ok
+test opam::tests::keeps_tool_local_paths_from_opam_env_and_dedupes_them ... ok
+test opam::tests::resolves_opam_release_assets_for_supported_targets ... ok
+test proto::tests::rewrites_stable_alias_to_latest ... ok
+test opam::tests::builds_non_interactive_init_command_for_windows ... ok
+test proto::tests::exposes_expected_executables_and_primary_binary ... ok
+test version_files::tests::normalizes_prefixed_and_zero_padded_versions ... ok
+test proto::tests::normalizes_supported_ocaml_tags_only ... ok
+test version_files::tests::rejects_unsupported_ocaml_version_package_names ... ok
+test version_files::tests::parses_ocaml_version_file_with_compiler_prefix ... ok
+test opam::tests::parses_opam_env_sexp_pairs_with_escaped_values ... ok
+test opam::tests::builds_opam_env_command_with_explicit_root_and_switch ... ok
+test opam::tests::builds_switch_create_command_for_local_switch ... ok
+test proto::tests::builds_versions_output_with_stable_alias_and_deduped_versions ... ok
+test version_files::tests::parses_exact_dune_project_compiler_pins ... ok
+test version_files::tests::parses_dune_project_constraints_and_strips_comments ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 2 tests
+test public_activate_environment_output_keeps_tool_paths_from_opam_env ... ok
+test public_parse_version_file_normalizes_supported_ocaml_inputs ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

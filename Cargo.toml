@@ -1,0 +1,23 @@
+[workspace]
+members = ["plugins/*"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/Hebilicious/proto-plugins"
+
+[workspace.dependencies]
+anyhow = "1.0.100"
+extism-pdk = "1.4.1"
+proto_pdk = "=0.32.7"
+regex = "1.12.2"
+serde = { version = "1.0.228", features = ["derive"] }
+starbase_utils = { version = "0.12.6", default-features = false }
+
+[profile.release]
+codegen-units = 1
+debug = false
+lto = true
+opt-level = "s"
+panic = "abort"

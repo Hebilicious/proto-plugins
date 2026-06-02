@@ -1,0 +1,10 @@
+$schema: "https://moonrepo.dev/schemas/workspace.json"
+
+projects:
+  proto-plugins: "."
+  nu: "plugins/nu"
+  ocaml: "plugins/ocaml"
+
+vcs:
+  client: "git"
+  defaultBranch: "main"

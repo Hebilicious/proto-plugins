@@ -1,0 +1,25 @@
+[package]
+name = "ocaml"
+version = "0.1.1"
+edition.workspace = true
+license.workspace = true
+description = "OCaml WASM plugin for proto."
+homepage = "https://ocaml.org/"
+repository.workspace = true
+readme = "README.md"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+anyhow.workspace = true
+extism-pdk.workspace = true
+proto_pdk.workspace = true
+regex.workspace = true
+serde.workspace = true
+starbase_utils.workspace = true
+
+[features]
+default = ["wasm"]
+wasm = []

@@ -1,0 +1,39 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+language: "rust"
+layer: "tool"
+tags: ["proto-plugin", "wasm"]
+
+fileGroups:
+  sources:
+    - "Cargo.toml"
+    - "src/**/*.rs"
+  tests:
+    - "tests/**/*.rs"
+    - "tests/e2e/**/*"
+
+tasks:
+  test:
+    command: "cargo"
+    args: ["test", "--package", "ocaml"]
+    inputs:
+      - "@group(sources)"
+      - "@group(tests)"
+
+  build:
+    command: "cargo"
+    args: ["build", "--package", "ocaml", "--target", "wasm32-wasip1"]
+    inputs:
+      - "@group(sources)"
+    outputs:
+      - "/target/wasm32-wasip1/debug/ocaml.wasm"
+
+  e2e:
+    script: "./tests/e2e/run.sh"
+    deps:
+      - "~:build"
+    inputs:
+      - "@group(sources)"
+      - "@group(tests)"
+    options:
+      cache: false
