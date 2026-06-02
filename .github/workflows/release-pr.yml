@@ -21,7 +21,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+          cache: false
+      - name: Install Rust components
+        run: ./.github/scripts/setup-rust.sh
       - uses: release-plz/action@v0.5
         with:
           command: release-pr
@@ -42,7 +47,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+          cache: false
+      - name: Install Rust components
+        run: ./.github/scripts/setup-rust.sh
       - id: release
         uses: release-plz/action@v0.5
         with:
@@ -65,10 +75,13 @@ jobs:
           fetch-depth: 0
           ref: ${{ matrix.release.tag }}
 
-      - uses: moonrepo/setup-rust@v1
+      - uses: moonrepo/setup-toolchain@v0
         with:
+          auto-install: true
           cache: false
-          targets: wasm32-wasip1
+
+      - name: Install Rust components
+        run: ./.github/scripts/setup-rust.sh
 
       - name: Install WASM tooling
         run: |
@@ -112,11 +125,12 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
           artifacts: builds/${{ matrix.release.package_name }}.wasm,builds/${{ matrix.release.package_name }}.wasm.sha256
           artifactErrorsFailBuild: true
           bodyFile: release-notes.md
           makeLatest: true
           name: ${{ matrix.release.package_name }} v${{ matrix.release.version }}
           prerelease: ${{ contains(matrix.release.version, '-alpha') || contains(matrix.release.version, '-beta') || contains(matrix.release.version, '-rc') }}
-          skipIfReleaseExists: true
+          replacesArtifacts: true
           tag: ${{ matrix.release.tag }}

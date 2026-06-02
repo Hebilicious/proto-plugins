@@ -20,4 +20,4 @@
 - Run `cargo test --workspace` for Rust/unit and integration coverage.
 - Run `cargo build --workspace --target wasm32-wasip1` before sending changes for review.
 - Run `moon run proto-plugins:fmt proto-plugins:test proto-plugins:build` for the monorepo task graph.
-- When changing release automation, keep `rust-toolchain.toml` pinned to an explicit Rust version so release builds continue to select `wasm32-wasip1`.
+- When changing release automation, keep `.prototools` pinned to an explicit Rust version and install the `wasm32-wasip1` target from that version.

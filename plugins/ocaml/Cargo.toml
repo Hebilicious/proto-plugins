@@ -7,7 +7,6 @@ description = "OCaml WASM plugin for proto."
 homepage = "https://ocaml.org/"
 repository.workspace = true
 readme = "README.md"
-publish = false
 
 [lib]
 crate-type = ["cdylib", "lib"]

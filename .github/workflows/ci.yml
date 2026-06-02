@@ -24,9 +24,7 @@ jobs:
           cache: false
 
       - name: Install Rust components
-        run: |
-          rustup toolchain uninstall 1.94.1-x86_64-unknown-linux-gnu || true
-          rustup toolchain install 1.94.1 --profile default --component rustfmt --target wasm32-wasip1
+        run: ./.github/scripts/setup-rust.sh
 
       - name: Run moon tasks
         run: |
