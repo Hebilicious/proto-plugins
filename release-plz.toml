@@ -7,6 +7,11 @@ repo_url = "https://github.com/Hebilicious/proto-plugins"
 pr_labels = ["release"]
 
 [[package]]
+name = "hk"
+git_tag_name = "hk-v{{ version }}"
+git_release_name = "hk v{{ version }}"
+
+[[package]]
 name = "nu"
 git_tag_name = "nu-v{{ version }}"
 git_release_name = "nu v{{ version }}"
