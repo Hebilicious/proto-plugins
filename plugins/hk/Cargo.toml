@@ -7,7 +7,6 @@ description = "HK WASM plugin for proto."
 homepage = "https://hk.jdx.dev/"
 repository.workspace = true
 readme = "README.md"
-publish = false
 
 [lib]
 crate-type = ["cdylib", "lib"]

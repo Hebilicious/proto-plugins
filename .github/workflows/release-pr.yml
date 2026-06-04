@@ -21,7 +21,19 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+          cache: false
+      - name: Install Rust toolchain
+        run: |
+          proto install rust
+          rust_bin_dir="$(proto bin rust --dir exes)"
+          rust_toolchain="$(basename "$(dirname "${rust_bin_dir}")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
+          echo "RUSTUP_TOOLCHAIN=${rust_toolchain}" >> "${GITHUB_ENV}"
+          echo "${rust_bin_dir}" >> "${GITHUB_PATH}"
       - uses: release-plz/action@v0.5
         with:
           command: release-pr
@@ -42,7 +54,19 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: moonrepo/setup-toolchain@v0
+        with:
+          auto-install: true
+          cache: false
+      - name: Install Rust toolchain
+        run: |
+          proto install rust
+          rust_bin_dir="$(proto bin rust --dir exes)"
+          rust_toolchain="$(basename "$(dirname "${rust_bin_dir}")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
+          echo "RUSTUP_TOOLCHAIN=${rust_toolchain}" >> "${GITHUB_ENV}"
+          echo "${rust_bin_dir}" >> "${GITHUB_PATH}"
       - id: release
         uses: release-plz/action@v0.5
         with:
@@ -65,10 +89,20 @@ jobs:
           fetch-depth: 0
           ref: ${{ matrix.release.tag }}
 
-      - uses: moonrepo/setup-rust@v1
+      - uses: moonrepo/setup-toolchain@v0
         with:
+          auto-install: true
           cache: false
-          targets: wasm32-wasip1
+
+      - name: Install Rust toolchain
+        run: |
+          proto install rust
+          rust_bin_dir="$(proto bin rust --dir exes)"
+          rust_toolchain="$(basename "$(dirname "${rust_bin_dir}")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
+          echo "RUSTUP_TOOLCHAIN=${rust_toolchain}" >> "${GITHUB_ENV}"
+          echo "${rust_bin_dir}" >> "${GITHUB_PATH}"
 
       - name: Install WASM tooling
         run: |
@@ -112,11 +146,12 @@ jobs:
 
       - uses: ncipollo/release-action@v1
         with:
+          allowUpdates: true
           artifacts: builds/${{ matrix.release.package_name }}.wasm,builds/${{ matrix.release.package_name }}.wasm.sha256
           artifactErrorsFailBuild: true
           bodyFile: release-notes.md
           makeLatest: true
           name: ${{ matrix.release.package_name }} v${{ matrix.release.version }}
           prerelease: ${{ contains(matrix.release.version, '-alpha') || contains(matrix.release.version, '-beta') || contains(matrix.release.version, '-rc') }}
-          skipIfReleaseExists: true
+          replacesArtifacts: true
           tag: ${{ matrix.release.tag }}

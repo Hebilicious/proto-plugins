@@ -2,7 +2,7 @@
 git_only = true
 publish = false
 release_always = false
-git_release_enable = false
+git_release_enable = true
 repo_url = "https://github.com/Hebilicious/proto-plugins"
 pr_labels = ["release"]
 

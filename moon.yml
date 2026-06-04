@@ -8,7 +8,7 @@ fileGroups:
   sources:
     - "Cargo.toml"
     - "Cargo.lock"
-    - "rust-toolchain.toml"
+    - ".prototools"
     - "plugins/*/Cargo.toml"
     - "plugins/*/src/**/*.rs"
   tests:
