@@ -16,7 +16,6 @@ fileGroups:
     - "plugins/*/tests/e2e/**/*"
   config:
     - ".github/workflows/*.yml"
-    - ".github/scripts/*.sh"
     - ".moon/**/*.yml"
     - "release-plz.toml"
     - "hk.pkl"
