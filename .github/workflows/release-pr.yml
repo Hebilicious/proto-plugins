@@ -25,12 +25,15 @@ jobs:
         with:
           auto-install: true
           cache: false
-      - name: Install Rust components
+      - name: Install Rust toolchain
         run: |
           proto install rust
-          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rust_bin_dir="$(proto bin rust --dir exes)"
+          rust_toolchain="$(basename "$(dirname "${rust_bin_dir}")")"
           rustup component add rustfmt --toolchain "${rust_toolchain}"
           rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
+          echo "RUSTUP_TOOLCHAIN=${rust_toolchain}" >> "${GITHUB_ENV}"
+          echo "${rust_bin_dir}" >> "${GITHUB_PATH}"
       - uses: release-plz/action@v0.5
         with:
           command: release-pr
@@ -55,12 +58,15 @@ jobs:
         with:
           auto-install: true
           cache: false
-      - name: Install Rust components
+      - name: Install Rust toolchain
         run: |
           proto install rust
-          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rust_bin_dir="$(proto bin rust --dir exes)"
+          rust_toolchain="$(basename "$(dirname "${rust_bin_dir}")")"
           rustup component add rustfmt --toolchain "${rust_toolchain}"
           rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
+          echo "RUSTUP_TOOLCHAIN=${rust_toolchain}" >> "${GITHUB_ENV}"
+          echo "${rust_bin_dir}" >> "${GITHUB_PATH}"
       - id: release
         uses: release-plz/action@v0.5
         with:
@@ -88,12 +94,15 @@ jobs:
           auto-install: true
           cache: false
 
-      - name: Install Rust components
+      - name: Install Rust toolchain
         run: |
           proto install rust
-          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rust_bin_dir="$(proto bin rust --dir exes)"
+          rust_toolchain="$(basename "$(dirname "${rust_bin_dir}")")"
           rustup component add rustfmt --toolchain "${rust_toolchain}"
           rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
+          echo "RUSTUP_TOOLCHAIN=${rust_toolchain}" >> "${GITHUB_ENV}"
+          echo "${rust_bin_dir}" >> "${GITHUB_PATH}"
 
       - name: Install WASM tooling
         run: |
