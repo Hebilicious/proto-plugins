@@ -26,7 +26,11 @@ jobs:
           auto-install: true
           cache: false
       - name: Install Rust components
-        run: proto install rust --force -- --profile default --component rustfmt --target wasm32-wasip1
+        run: |
+          proto install rust
+          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
       - uses: release-plz/action@v0.5
         with:
           command: release-pr
@@ -52,7 +56,11 @@ jobs:
           auto-install: true
           cache: false
       - name: Install Rust components
-        run: proto install rust --force -- --profile default --component rustfmt --target wasm32-wasip1
+        run: |
+          proto install rust
+          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
       - id: release
         uses: release-plz/action@v0.5
         with:
@@ -81,7 +89,11 @@ jobs:
           cache: false
 
       - name: Install Rust components
-        run: proto install rust --force -- --profile default --component rustfmt --target wasm32-wasip1
+        run: |
+          proto install rust
+          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
 
       - name: Install WASM tooling
         run: |

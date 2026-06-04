@@ -24,7 +24,11 @@ jobs:
           cache: false
 
       - name: Install Rust components
-        run: proto install rust --force -- --profile default --component rustfmt --target wasm32-wasip1
+        run: |
+          proto install rust
+          rust_toolchain="$(basename "$(dirname "$(proto bin rust --dir exes)")")"
+          rustup component add rustfmt --toolchain "${rust_toolchain}"
+          rustup target add wasm32-wasip1 --toolchain "${rust_toolchain}"
 
       - name: Run moon tasks
         run: |
