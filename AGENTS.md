@@ -1,5 +1,11 @@
 # Repository Instructions
 
+## Instruction Priority
+
+- Treat these repository instructions as defaults for this repo.
+- A direct, explicit user instruction in the current conversation can override these defaults.
+- System, developer, tool, security, and safety instructions still take precedence.
+
 ## Branches and PRs
 
 - Do not push directly to `main`.
