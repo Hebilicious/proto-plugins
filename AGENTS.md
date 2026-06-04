@@ -12,8 +12,9 @@
 - Do not create tags or GitHub releases manually.
 - Use the existing `release-plz` workflow:
   - merge feature PRs into `main`
-  - let `release-plz` open or update the automated release PR
-  - merge the release PR to publish the next release
+  - let `release-plz` open or update the automated release PR when package versions need to change
+  - merge the release PR to publish the next bumped release
+  - initial git-only releases publish from `main` when no matching monorepo tag exists
 
 ## Validation
 

@@ -74,4 +74,4 @@ Each plugin is versioned independently and uses monorepo tags matching proto's G
 - `ocaml-vX.Y.Z`
 - `hk-vX.Y.Z`
 
-Merging normal changes into `main` opens or updates the release PR. Merging the release PR creates the package tags, builds the matching WASM plugin, attaches the `.wasm` and `.sha256` assets to the GitHub release, and leaves Cargo publishing disabled.
+Merging normal changes into `main` opens or updates the release PR when package versions need to change. The release workflow publishes any package version that does not have a matching monorepo tag, builds the matching WASM plugin, attaches the `.wasm` and `.sha256` assets to the GitHub release, and leaves Cargo publishing disabled.
