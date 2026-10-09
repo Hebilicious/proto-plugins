@@ -56,6 +56,9 @@ echo "${version}" > "${project_dir}/.ocaml-version"
 
 cd "${project_dir}"
 
+echo "trusting project config"
+"${proto_bin}" trust "${project_dir}/.prototools"
+
 echo "installing tool through proto"
 "${proto_bin}" --log trace install ocaml "${version}"
 
