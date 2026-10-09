@@ -10,7 +10,7 @@ use proto_pdk::*;
 #[cfg(target_arch = "wasm32")]
 use starbase_utils::fs;
 use std::collections::HashSet;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 #[cfg(target_arch = "wasm32")]
 #[host_fn]
@@ -51,6 +51,13 @@ fn execute_plan(
     }
 
     Ok(result)
+}
+
+#[cfg(target_arch = "wasm32")]
+fn to_real_path(path: &VirtualPath) -> AnyResult<PathBuf> {
+    path.to_real_path()?
+        .map(RealPath::into_inner)
+        .ok_or_else(|| anyhow!("Failed to resolve {path} to a real path"))
 }
 
 pub fn ensure_supported_target(env: &HostEnvironment) -> AnyResult<()> {
@@ -163,14 +170,14 @@ pub fn build_locate_executables_output(env: &HostEnvironment) -> LocateExecutabl
 
 pub fn build_activate_environment_output(
     sexp: &str,
-    tool_dir: &VirtualPath,
+    real_tool_dir: &Path,
     env: &HostEnvironment,
 ) -> ActivateEnvironmentOutput {
     let mut output = ActivateEnvironmentOutput::default();
 
     for (key, value) in parse_opam_env_sexp(sexp) {
         if key == "PATH" {
-            output.paths = split_tool_paths(&value, tool_dir, env);
+            output.paths = split_tool_paths(&value, real_tool_dir, env);
         } else {
             output.env.insert(key, value);
         }
@@ -193,7 +200,7 @@ mod tests {
             ci: false,
             libc: HostLibc::Gnu,
             os,
-            home_dir: VirtualPath::Real(PathBuf::from("/home/tester")),
+            home_dir: VirtualPath::new("/home/tester"),
         }
     }
 
@@ -333,24 +340,28 @@ pub fn native_install(
 
     fs::write_file(opam_bin.to_path_buf(), opam_bytes)?;
 
-    let opam_command = opam_bin.real_path_string().ok_or_else(|| {
-        PluginError::Message(format!("Failed to resolve {} to a real path", opam_bin))
-    })?;
+    let opam_command = to_real_path(&opam_bin)?.to_string_lossy().into_owned();
+    let real_install_dir = to_real_path(&input.install_dir)?;
 
     execute_plan(
-        build_opam_init_command(&opam_command, &input.install_dir, &env),
+        build_opam_init_command(&opam_command, &input.install_dir, &real_install_dir, &env),
         !env.os.is_windows(),
         true,
     )?;
 
     execute_plan(
-        build_switch_create_command(&opam_command, &input.install_dir, &input.context.version),
+        build_switch_create_command(
+            &opam_command,
+            &input.install_dir,
+            &real_install_dir,
+            &input.context.version,
+        ),
         !env.os.is_windows(),
         true,
     )?;
 
     execute_plan(
-        build_dune_install_command(&opam_command, &input.install_dir),
+        build_dune_install_command(&opam_command, &input.install_dir, &real_install_dir),
         !env.os.is_windows(),
         true,
     )?;
@@ -382,7 +393,7 @@ pub fn locate_executables(
     Json(_input): Json<LocateExecutablesInput>,
 ) -> FnResult<Json<LocateExecutablesOutput>> {
     Ok(Json(build_locate_executables_output(
-        &get_host_environment()?,
+        get_host_environment()?
     )))
 }
 
@@ -393,19 +404,18 @@ pub fn activate_environment(
 ) -> FnResult<Json<ActivateEnvironmentOutput>> {
     let env = get_host_environment()?;
     let opam_bin = opam_executable_path(&input.context.tool_dir, &env);
-    let opam_command = opam_bin
-        .real_path_string()
-        .unwrap_or_else(|| opam_bin.to_string());
+    let opam_command = to_real_path(&opam_bin)?.to_string_lossy().into_owned();
+    let real_tool_dir = to_real_path(&input.context.tool_dir)?;
 
     let result = execute_plan(
-        build_opam_env_command(&opam_command, &input.context),
+        build_opam_env_command(&opam_command, &input.context, &real_tool_dir),
         !env.os.is_windows(),
         false,
     )?;
 
     Ok(Json(build_activate_environment_output(
         &result.stdout,
-        &input.context.tool_dir,
+        &real_tool_dir,
         &env,
     )))
 }

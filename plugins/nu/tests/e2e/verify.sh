@@ -4,9 +4,8 @@ set -euo pipefail
 
 workspace_root="/tmp/proto-nu-e2e"
 project_dir="${workspace_root}/project"
-plugin_path="/workspace/target/wasm32-wasip1/debug/nu.wasm"
+plugin_path="/workspace/plugins/nu/nu.toml"
 version="0.112.2"
-cargo_bin="/usr/local/cargo/bin/cargo"
 proto_bin="/root/.proto/bin/proto"
 
 assert_eq() {
@@ -39,10 +38,6 @@ exec_in_tool() {
   "${proto_bin}" exec "nu@${version}" -- bash -lc "$1"
 }
 
-echo "building plugin wasm"
-cd /workspace
-"${cargo_bin}" build --target wasm32-wasip1 --package nu
-
 echo "preparing proto workspace"
 rm -rf "${workspace_root}"
 mkdir -p "${project_dir}"
@@ -55,6 +50,9 @@ EOF
 echo "${version}" > "${project_dir}/.nu-version"
 
 cd "${project_dir}"
+
+echo "trusting project config"
+"${proto_bin}" trust "${project_dir}/.prototools"
 
 echo "installing tool through proto"
 "${proto_bin}" --log trace install nu "${version}"

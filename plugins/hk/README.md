@@ -1,12 +1,14 @@
 # proto-hk
 
-HK WASM plugin for [proto](https://moonrepo.dev/proto).
+HK TOML plugin for [proto](https://moonrepo.dev/proto).
+
+This plugin uses the proto TOML plugin format v2 and requires proto 0.63.0 or newer.
 
 ## Installation
 
 ```toml
-[plugins]
-hk = "github://hebilicious/proto-plugins/hk"
+[plugins.tools]
+hk = "https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/hk/hk.toml"
 
 [tools.hk]
 version = "1.46.0"
@@ -15,7 +17,7 @@ version = "1.46.0"
 Or add it explicitly:
 
 ```shell
-proto plugin add hk github://hebilicious/proto-plugins/hk
+proto plugin add hk https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/hk/hk.toml
 proto install hk
 ```
 
@@ -28,3 +30,9 @@ The plugin detects `.hk-version`.
 ```
 
 Aliases supported by proto include `latest` and `stable`.
+
+## Contributing
+
+```shell
+moon run hk:e2e
+```

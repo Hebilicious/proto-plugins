@@ -1,0 +1,46 @@
+format = "2"
+
+[plugin]
+description = "HK plugin for proto."
+homepage_url = "https://hk.jdx.dev/"
+repository_url = "https://github.com/Hebilicious/proto-plugins"
+
+[metadata]
+name = "HK"
+type = "command-line"
+default_version = "stable"
+minimum_proto_version = "0.63.0"
+
+[detect]
+files = [".hk-version"]
+
+[source.aliases]
+stable = "latest"
+
+[resolve]
+git_url = "https://github.com/jdx/hk"
+
+[install]
+download_url = "https://github.com/jdx/hk/releases/download/v{version}/{download_name}"
+
+[locate]
+exes_dirs = ["."]
+
+[locate.exes.hk]
+exe_path = "hk"
+primary = true
+
+[platform.linux]
+archs = ["x64", "arm64"]
+download_name = "hk-{arch}-unknown-linux-{libc}.tar.gz"
+archive_prefix = "hk-{arch}-unknown-linux-{libc}"
+
+[platform.macos]
+archs = ["arm64"]
+download_name = "hk-{arch}-apple-darwin.tar.gz"
+archive_prefix = "hk-{arch}-apple-darwin"
+
+[platform.windows]
+archs = ["x64", "arm64"]
+download_name = "hk-{arch}-pc-windows-msvc.zip"
+archive_prefix = "hk-{arch}-pc-windows-msvc"

@@ -1,23 +1,25 @@
 # proto-plugins
 
-WASM plugins for [proto](https://moonrepo.dev/proto), managed as a Rust monorepo with [moon](https://moonrepo.dev/moon).
+Plugins for [proto](https://moonrepo.dev/proto), managed as a monorepo with [moon](https://moonrepo.dev/moon).
+
+Plugins that only download prebuilt releases use the proto TOML plugin format v2 (proto 0.63.0+). Plugins that need custom install logic are Rust WASM plugins.
 
 ## Plugins
 
-| Plugin | Package | Locator |
+| Plugin | Kind | Locator |
 | --- | --- | --- |
-| [HK](plugins/hk) | `hk` | `github://hebilicious/proto-plugins/hk` |
-| [Nushell](plugins/nu) | `nu` | `github://hebilicious/proto-plugins/nu` |
-| [OCaml](plugins/ocaml) | `ocaml` | `github://hebilicious/proto-plugins/ocaml` |
+| [HK](plugins/hk) | TOML | `https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/hk/hk.toml` |
+| [Nushell](plugins/nu) | TOML | `https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/nu/nu.toml` |
+| [OCaml](plugins/ocaml) | WASM | `github://hebilicious/proto-plugins/ocaml` |
 
 ## Installation
 
 Add one or more plugins to `.prototools`:
 
 ```toml
-[plugins]
-hk = "github://hebilicious/proto-plugins/hk"
-nu = "github://hebilicious/proto-plugins/nu"
+[plugins.tools]
+hk = "https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/hk/hk.toml"
+nu = "https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/nu/nu.toml"
 ocaml = "github://hebilicious/proto-plugins/ocaml"
 
 [tools.hk]
@@ -33,8 +35,8 @@ version = "5.4.1"
 Or add them explicitly:
 
 ```shell
-proto plugin add hk github://hebilicious/proto-plugins/hk
-proto plugin add nu github://hebilicious/proto-plugins/nu
+proto plugin add hk https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/hk/hk.toml
+proto plugin add nu https://raw.githubusercontent.com/Hebilicious/proto-plugins/main/plugins/nu/nu.toml
 proto plugin add ocaml github://hebilicious/proto-plugins/ocaml
 ```
 
@@ -66,12 +68,10 @@ After the global install, `hk` is a no-op outside repositories that contain an `
 
 ## Releases
 
-Releases are handled by [`release-plz`](https://release-plz.dev/).
+TOML plugins are not released: proto loads them straight from `main` via their raw URL, so changes ship on merge.
 
-Each plugin is versioned independently and uses monorepo tags matching proto's GitHub locator rules:
+WASM plugins are released by [`release-plz`](https://release-plz.dev/). Each is versioned independently and uses monorepo tags matching proto's GitHub locator rules:
 
-- `nu-vX.Y.Z`
 - `ocaml-vX.Y.Z`
-- `hk-vX.Y.Z`
 
 Merging normal changes into `main` opens or updates the release PR when package versions need to change. The release workflow publishes any package version that does not have a matching monorepo tag, builds the matching WASM plugin, attaches the `.wasm` and `.sha256` assets to the GitHub release, and leaves Cargo publishing disabled.
