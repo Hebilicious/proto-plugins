@@ -3,7 +3,7 @@ use proto_pdk::{
 };
 use regex::Regex;
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 pub const OPAM_RELEASE_VERSION: &str = "2.5.0";
@@ -69,6 +69,10 @@ pub fn opam_executable_path(tool_dir: &VirtualPath, env: &HostEnvironment) -> Vi
     tool_dir.join(opam_install_bin(env))
 }
 
+fn path_arg(path: &Path) -> String {
+    path.to_string_lossy().into_owned()
+}
+
 pub fn compiler_package(version: &VersionSpec) -> String {
     format!("ocaml-base-compiler.{version}")
 }
@@ -118,6 +122,7 @@ pub fn opam_download_url(env: &HostEnvironment, version: &Version) -> AnyResult<
 pub fn build_opam_init_command(
     opam: &str,
     install_dir: &VirtualPath,
+    real_install_dir: &Path,
     env: &HostEnvironment,
 ) -> CommandPlan {
     let mut args = vec![
@@ -129,9 +134,7 @@ pub fn build_opam_init_command(
         "--bypass-checks".into(),
         "--no-opamrc".into(),
         "--root".into(),
-        opam_root_dir(install_dir)
-            .real_path_string()
-            .unwrap_or_else(|| opam_root_dir(install_dir).to_string()),
+        path_arg(&real_install_dir.join(OPAM_ROOT_DIR)),
         OPAM_REPOSITORY_NAME.into(),
         OPAM_REPOSITORY_URL.into(),
     ];
@@ -146,11 +149,10 @@ pub fn build_opam_init_command(
 pub fn build_switch_create_command(
     opam: &str,
     install_dir: &VirtualPath,
+    real_install_dir: &Path,
     version: &VersionSpec,
 ) -> CommandPlan {
-    let switch_dir = install_dir
-        .real_path_string()
-        .unwrap_or_else(|| install_dir.to_string());
+    let switch_dir = path_arg(real_install_dir);
 
     CommandPlan::new(
         opam,
@@ -161,18 +163,18 @@ pub fn build_switch_create_command(
             compiler_package(version),
             "--yes".into(),
             "--root".into(),
-            opam_root_dir(install_dir)
-                .real_path_string()
-                .unwrap_or_else(|| opam_root_dir(install_dir).to_string()),
+            path_arg(&real_install_dir.join(OPAM_ROOT_DIR)),
         ],
     )
     .with_cwd(install_dir)
 }
 
-pub fn build_dune_install_command(opam: &str, install_dir: &VirtualPath) -> CommandPlan {
-    let switch_dir = install_dir
-        .real_path_string()
-        .unwrap_or_else(|| install_dir.to_string());
+pub fn build_dune_install_command(
+    opam: &str,
+    install_dir: &VirtualPath,
+    real_install_dir: &Path,
+) -> CommandPlan {
+    let switch_dir = path_arg(real_install_dir);
 
     CommandPlan::new(
         opam,
@@ -181,9 +183,7 @@ pub fn build_dune_install_command(opam: &str, install_dir: &VirtualPath) -> Comm
             "dune".into(),
             "--yes".into(),
             "--root".into(),
-            opam_root_dir(install_dir)
-                .real_path_string()
-                .unwrap_or_else(|| opam_root_dir(install_dir).to_string()),
+            path_arg(&real_install_dir.join(OPAM_ROOT_DIR)),
             "--switch".into(),
             switch_dir,
         ],
@@ -191,11 +191,12 @@ pub fn build_dune_install_command(opam: &str, install_dir: &VirtualPath) -> Comm
     .with_cwd(install_dir)
 }
 
-pub fn build_opam_env_command(opam: &str, context: &PluginContext) -> CommandPlan {
-    let switch_dir = context
-        .tool_dir
-        .real_path_string()
-        .unwrap_or_else(|| context.tool_dir.to_string());
+pub fn build_opam_env_command(
+    opam: &str,
+    context: &PluginContext,
+    real_tool_dir: &Path,
+) -> CommandPlan {
+    let switch_dir = path_arg(real_tool_dir);
 
     CommandPlan::new(
         opam,
@@ -203,9 +204,7 @@ pub fn build_opam_env_command(opam: &str, context: &PluginContext) -> CommandPla
             "env".into(),
             "--sexp".into(),
             "--root".into(),
-            opam_root_dir(&context.tool_dir)
-                .real_path_string()
-                .unwrap_or_else(|| opam_root_dir(&context.tool_dir).to_string()),
+            path_arg(&real_tool_dir.join(OPAM_ROOT_DIR)),
             "--switch".into(),
             switch_dir,
             "--set-root".into(),
@@ -232,13 +231,10 @@ pub fn parse_opam_env_sexp(data: &str) -> Vec<(String, String)> {
 
 pub fn split_tool_paths(
     path_value: &str,
-    tool_dir: &VirtualPath,
+    real_tool_dir: &Path,
     env: &HostEnvironment,
 ) -> Vec<PathBuf> {
     let separator = if env.os.is_windows() { ';' } else { ':' };
-    let tool_root = tool_dir
-        .real_path()
-        .unwrap_or_else(|| tool_dir.to_path_buf());
     let mut paths = Vec::new();
 
     for entry in path_value
@@ -247,7 +243,7 @@ pub fn split_tool_paths(
     {
         let entry = PathBuf::from(entry);
 
-        if !entry.starts_with(&tool_root) || paths.contains(&entry) {
+        if !entry.starts_with(real_tool_dir) || paths.contains(&entry) {
             continue;
         }
 
@@ -270,16 +266,12 @@ mod tests {
             ci: false,
             libc: HostLibc::Gnu,
             os,
-            home_dir: VirtualPath::Real(PathBuf::from("/home/tester")),
+            home_dir: VirtualPath::new("/home/tester"),
         }
     }
 
     fn tool_dir() -> VirtualPath {
-        VirtualPath::Virtual {
-            path: PathBuf::from(format!("/proto/tools/ocaml/{FIXTURE_OCAML_VERSION}")),
-            virtual_prefix: PathBuf::from("/proto"),
-            real_prefix: PathBuf::from("/root/.proto"),
-        }
+        VirtualPath::new(format!("/proto/tools/ocaml/{FIXTURE_OCAML_VERSION}"))
     }
 
     fn real_tool_dir() -> String {
@@ -324,6 +316,7 @@ mod tests {
         let plan = build_opam_init_command(
             &real_tool_path("bin/opam.exe"),
             &tool_dir(),
+            Path::new(&real_tool_dir()),
             &host_env(HostOS::Windows, HostArch::X64),
         );
 
@@ -340,6 +333,7 @@ mod tests {
         let plan = build_switch_create_command(
             &real_tool_path("bin/opam"),
             &tool_dir(),
+            Path::new(&real_tool_dir()),
             &VersionSpec::parse(FIXTURE_OCAML_VERSION)?,
         );
 
@@ -368,13 +362,17 @@ mod tests {
 
         let context = PluginContext {
             proto_version: Some(Version::new(0, 55, 3)),
-            temp_dir: VirtualPath::Real(PathBuf::from("/tmp/proto-ocaml")),
+            temp_dir: VirtualPath::new("/tmp/proto-ocaml"),
             tool_dir: tool_dir(),
             version: VersionSpec::parse(FIXTURE_OCAML_VERSION)?,
-            working_dir: VirtualPath::Real(PathBuf::from("/workspace")),
+            working_dir: VirtualPath::new("/workspace"),
         };
 
-        let plan = build_opam_env_command(&real_tool_path("bin/opam"), &context);
+        let plan = build_opam_env_command(
+            &real_tool_path("bin/opam"),
+            &context,
+            Path::new(&real_tool_dir()),
+        );
 
         assert_eq!(
             plan.args,
@@ -417,7 +415,7 @@ mod tests {
         let env = host_env(HostOS::Linux, HostArch::Arm64);
         let paths = split_tool_paths(
             &format!("{0}/bin:{0}/_opam/bin:/usr/bin:{0}/bin", real_tool_dir(),),
-            &tool_dir(),
+            Path::new(&real_tool_dir()),
             &env,
         );
 

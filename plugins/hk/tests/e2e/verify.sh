@@ -4,9 +4,8 @@ set -euo pipefail
 
 workspace_root="/tmp/proto-hk-e2e"
 project_dir="${workspace_root}/project"
-plugin_path="/workspace/target/wasm32-wasip1/debug/hk.wasm"
+plugin_path="/workspace/plugins/hk/hk.toml"
 version="1.46.0"
-cargo_bin="/usr/local/cargo/bin/cargo"
 proto_bin="/root/.proto/bin/proto"
 
 assert_eq() {
@@ -39,10 +38,6 @@ exec_in_tool() {
   "${proto_bin}" exec "hk@${version}" -- bash -lc "$1"
 }
 
-echo "building plugin wasm"
-cd /workspace
-"${cargo_bin}" build --target wasm32-wasip1 --package hk
-
 echo "preparing proto workspace"
 rm -rf "${workspace_root}"
 mkdir -p "${project_dir}"
@@ -55,6 +50,9 @@ EOF
 echo "${version}" > "${project_dir}/.hk-version"
 
 cd "${project_dir}"
+
+echo "trusting project config"
+"${proto_bin}" trust "${project_dir}/.prototools"
 
 echo "installing tool through proto"
 "${proto_bin}" --log trace install hk "${version}"

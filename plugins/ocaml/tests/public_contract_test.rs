@@ -2,7 +2,7 @@ use ocaml::{build_activate_environment_output, parse_version_file};
 use proto_pdk::{
     AnyResult, HostArch, HostEnvironment, HostLibc, HostOS, UnresolvedVersionSpec, VirtualPath,
 };
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 const FIXTURE_OCAML_VERSION: &str = "5.4.1";
 
@@ -12,15 +12,7 @@ fn host_env() -> HostEnvironment {
         ci: false,
         libc: HostLibc::Gnu,
         os: HostOS::Linux,
-        home_dir: VirtualPath::Real(PathBuf::from("/home/tester")),
-    }
-}
-
-fn tool_dir() -> VirtualPath {
-    VirtualPath::Virtual {
-        path: PathBuf::from(format!("/proto/tools/ocaml/{FIXTURE_OCAML_VERSION}")),
-        virtual_prefix: PathBuf::from("/proto"),
-        real_prefix: PathBuf::from("/root/.proto"),
+        home_dir: VirtualPath::new("/home/tester"),
     }
 }
 
@@ -69,7 +61,7 @@ fn public_activate_environment_output_keeps_tool_paths_from_opam_env() {
             ("PATH" "{0}/bin:{0}/_opam/bin:/root/.cargo/bin:/usr/bin"))"#,
             real_tool_dir(),
         ),
-        &tool_dir(),
+        Path::new(&real_tool_dir()),
         &host_env(),
     );
 
